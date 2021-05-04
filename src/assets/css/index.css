@@ -1,23 +1,39 @@
-.content-wrapper {
-    width: 100vw;
-    min-height: 100vh;
-    box-sizing: border-box;
-    overflow: hidden;
-    padding: 16px 16px 0;
-    background-color: #F5F5F5;
-    color: #333;
-}
-
-.no-content-wrapper {
-    width: 100vw;
-    min-height: calc(100vh - 80px);
-    box-sizing: border-box;
-    overflow: hidden;
-    padding: 16px 16px 0;
-    background-color: #F5F5F5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color:#626675;
-    font-size: 22px;
+.all-wrapper {
+    font-family: "Avenir"!important;
+    position: relative;
+    #toast {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        margin-left: -50px;
+        transition: all .3s;
+        height: 40px;
+        min-width: 100px;
+        border-radius: 4px;
+        background-color: #ffffff;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
+        .toast-icon {
+            height: 40px;
+            width: 40px;
+            display: inline-flex;
+            vertical-align: middle;
+            justify-content: center;
+            align-items: center;
+            svg {
+                height: 20px;
+                width: 20px;
+            }
+        }
+        .toast-content {
+            display: inline-block;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+    }
 }

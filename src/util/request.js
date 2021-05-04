@@ -9,7 +9,8 @@ const createXHR = () => {
 };
 
 const preProcessRes = (res, resolve, reject) => {
-    res.errno ? reject(res.errno) : resolve(res);
+    const result = typeof res === 'string' ? JSON.parse(res) : res;
+    result.errno ? reject(result) : resolve(result);
 };
 
 const getUrlString = param => {
@@ -31,7 +32,7 @@ export default {
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         preProcessRes(xhr.response, resolve, reject);
-                    } else {
+                    } else if (xhr.readyState === 4) {
                         reject(xhr.response);
                     }
                 };
@@ -47,14 +48,15 @@ export default {
             return new Promise((resolve, reject) => {
                 const {url} = params;
                 xhr.open('POST', url);
+                xhr.setRequestHeader('content-type', 'application/json');
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         preProcessRes(xhr.response, resolve, reject);
-                    } else {
+                    } else if (xhr.readyState === 4) {
                         reject(xhr.response);
                     }
                 };
-                xhr.send(params);
+                xhr.send(JSON.stringify(params));
             });
         } else {
             return this.jsonp(params);

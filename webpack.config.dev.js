@@ -9,10 +9,6 @@ module.exports = {
         filename: '[name].[hash:6].js',
         path: path.resolve(__dirname, 'dist')
     },
-    externals: {
-        'react': 'React',
-        'react-dom': 'ReactDOM'
-    },
     module: {
         rules: [
             {
