@@ -1,6 +1,10 @@
 .all-wrapper {
     font-family: "Avenir"!important;
     position: relative;
+    background-color: #ecf0f3;
+    min-width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
     #toast {
         position: absolute;
         top: 0;
