@@ -1,13 +1,31 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import Card from '../card/card.jsx';
 import cache from '../util/cache';
 import './user.less';
 import Profile from '../profile/profile.jsx';
+import toast from '../toast/toast';
+import Ajax from '../util/request';
+import Popup from '../popup/popup.jsx';
+
+const examples = [
+    {type: 1, color: '#28b5b5', describ: '加入了我们～', tip: '注册系统'},
+    {type: 2, color: '#344fa1', describ: '生成了一个新的版权。', tip: '注册版权'},
+    {type: 3, color: '#ff8882', describ: '转让了一个版权。', tip: '转让版权'}
+];
 
 const User = props => {
 
-    const [userName, setUserName] = useState('');
+
+    const [userName, setUserName] = useState('--');
     const [timeStr, setTime] = useState('');
+    const [psdVerifyed, setPsdVerifyState] = useState(false);
+    const [psd ,setPsd] = useState('');
+    const [registerTime, setRegisterTime] = useState('');
+    const [productList, setProductList] = useState([]);
+    const [actions, setActions] = useState([]);
+    const [actionPopup, setActionPopup] = useState(false);
+    const [productName, setProductName] = useState('');
+    const [productDesc, setProductDesc] = useState('');
 
     const computeTime = () => {
         const date = new Date();
@@ -16,10 +34,76 @@ const User = props => {
     };
 
     useEffect(() => {
-        const name = cache.getCache('userName') || JSON.parse(sessionStorage.getItem('user') || '{}').user;
-        setUserName(name);
-        computeTime();
+        Ajax.get({url: 'http://localhost:3000/getuserinfo'})
+        .then(res => {
+            const {user_name, register_time, product_list, actions: his} = res.data;
+            setUserName(user_name);
+            const date = Math.ceil((new Date().getTime() - parseInt(register_time)) / 86400000);
+            setRegisterTime(date);
+            setProductList(product_list);
+            const newHis = his.map(action => {
+                const {color, describ} = examples.filter(example => example.type === action.action_type)[0];
+                const tempDate = new Date(parseInt(action.time));
+                return {...action, color, describ, dateStr: tempDate.toLocaleDateString(), timeStr: tempDate.toLocaleTimeString()};
+            });
+            setActions(newHis);
+        })
+        .catch(err => toast.fail({content: err.errMsg}));
     }, []);
+
+
+    const inPutPsd = e => {
+        setPsd(e.target.value);
+    }
+
+    const verifyPsd = () => {
+        if (!psd) {
+            toast.fail({content: '请填写密码！'});
+            return;
+        }
+        if (!psdVerifyed) {
+            Ajax.post({url: 'http://localhost:3000/verifypsd', psd})
+            .then(res => {
+                toast.success({content: res.errMsg});
+                setPsdVerifyState(true);
+                setPsd('');
+                document.querySelector('#psd-update').value = '';
+            }).catch(err => toast.fail({content: err.errMsg}));
+        } else {
+            Ajax.post({url: 'http://localhost:3000/updatepsd', psd})
+            .then(res => {
+                toast.success({content: res.errMsg});
+                setPsdVerifyState(false);
+                setPsd('');
+                document.querySelector('#psd-update').value = '';
+            })
+            .catch(err => toast.fail({content: err.errMsg}));
+        }
+    }
+
+    const quit = () => {
+        sessionStorage.removeItem('user');
+        cache.setCache('userName', undefined);
+        document.cookie = '';
+        toast.success({content: '已退出'});
+        setTimeout(() => {
+            location.hash = '/';
+        }, 2000);
+    }
+
+    const closeActionPopup = () => {
+        setActionPopup(false);
+    }
+    const showActionPopup = () => {
+        setActionPopup(true);
+    };
+
+    const inPutProductName = e => {
+        setProductName(e.target.value);
+    };
+    const inPutProductDesc = e => {
+        setProductDesc(e.target.value);
+    };
     return <div>
         <div className="left-block">
             <div className="left-top-block">
@@ -27,14 +111,26 @@ const User = props => {
                     <Card title={`你好，${userName}！`} />
                     <Card title={timeStr} />
                 </div>} */}
-                <Card height="50vh" width="35vw" title={'Profile'}>
+                <Card height="35vh" width="35vw" title={'Profile'}>
                     <div className="profile-box">
-                        <Profile name={userName} />
+                        <div className="name-block">
+                            <Profile name={userName} />
+                            <div className="quit" onClick={quit}>退出</div>
+                        </div>
+                        <p className="register-tip">这是您加入我们的第{registerTime}天！</p>
+                        <div className="fix-psd">
+                            <span>修改密码</span>
+                            <input id="psd-update" className="input-label fix-psd-input" type="password" onInput={inPutPsd} placeholder={psdVerifyed ? '请输入新密码' : '请输入原密码'} />
+                            <div className="fix-psd-button" onClick={verifyPsd}>
+                                {psdVerifyed ? '修改' : '验证'}
+                            </div>
+                        </div>
                     </div>
                 </Card>
-                <Card title="Upload" width="35vw">
+                <Card title="Upload" height="48vh" width="35vw">
                     <div className="upload-box">
-
+                        <input className="input-label product-name" type="text" onInput={inPutProductName} placeholder={'版权名称'} />
+                        <textarea className="input-label product-describ" type="text" onInput={inPutProductDesc} placeholder={'版权描述'} />
                     </div>
                 </Card>
             </div>
@@ -52,12 +148,42 @@ const User = props => {
             </div>
             <div className="right-left-block">
                 <Card title={'My Product'} width="25vw">
-                    <div className="product-list-box"></div>
+                    <div className="product-list-box">
+                        {(productList && productList[0]) ? productList.map(item => {}) : <div className="no-product-tip">还没有属于您的版权呢，多多上传吧～</div>}
+                    </div>
                 </Card>
             </div>
             <div className="right-right-block">
                 <Card title={'History'} width="25vw">
-                    <div className="history-box"></div>
+                    <div className="history-box">
+                        <div className="example-tip">
+                            {examples.map(example =>
+                                (<div className="example">
+                                    <div className="example-point" style={{background: example.color}}></div>
+                                    <div className="example-describ">{example.tip}</div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="action-list">
+                            {actions.map((action, index, arr) => (index < 6 ? <div className="action">
+                                {index < arr.length - 1 && <div className="bottom-line"></div>}
+                                {index > 0 && <div className="top-line"></div>}
+                                <div className="action-color" style={{background: action.color}}></div>
+                                <span>{action.dateStr} {action.timeStr}</span> {action.describ}
+                            </div> : ''))}
+                            {actions.length > 6 && <div className="more-action" onClick={showActionPopup}>点击查看更多</div>}
+                        </div>
+                        {actionPopup && <Popup onClose={closeActionPopup}>
+                            <div className="action-list">
+                                {actions.map((action, index, arr) => <div className="action">
+                                    {index < arr.length - 1 && <div className="bottom-line"></div>}
+                                    {index > 0 && <div className="top-line"></div>}
+                                    <div className="action-color" style={{background: action.color}}></div>
+                                    <span>{action.dateStr} {action.timeStr}</span> {action.describ}
+                                </div>)}
+                            </div>
+                        </Popup>}
+                    </div>
                 </Card>
             </div>
         </div>

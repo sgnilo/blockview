@@ -1,12 +1,13 @@
 .popup-mask {
     height: 100vh;
     width: 100vw;
-    background-color: #eeeeee;
+    backdrop-filter: blur(5px);
     position: fixed;
     top: 0;
     left: 0;
     overflow: hidden;
     z-index: 99;
+    animation: appear .3s;
     .popup-board {
         height: 100vh;
         width: 40vw;
@@ -22,16 +23,25 @@
             top: 10px;
             height: 30px;
             width: 30px;
-            background-color: rgba(0, 0, 0, .6);
+            background-color: rgba(0, 0, 0, .3);
             cursor: pointer;
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             svg {
-                height: 20px;
-                width: 20px;
+                height: 16px;
+                width: 16px;
             }
         }
+    }
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }

@@ -29,6 +29,7 @@ export default {
         if (xhr) {
             return new Promise((resolve, reject) => {
                 xhr.open('GET', getUrlString(params));
+                xhr.withCredentials = true;
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         preProcessRes(xhr.response, resolve, reject);
@@ -37,6 +38,13 @@ export default {
                     }
                 };
                 xhr.send();
+            }).catch(err => {
+                if (err.errno === 3) {
+                    sessionStorage.removeItem('userName');
+                    location.hash = '/'
+                } else {
+                    return err;
+                }
             });
         } else {
             return this.jsonp(params);
@@ -48,6 +56,7 @@ export default {
             return new Promise((resolve, reject) => {
                 const {url} = params;
                 xhr.open('POST', url);
+                xhr.withCredentials = true;
                 xhr.setRequestHeader('content-type', 'application/json');
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState === 4 && xhr.status === 200) {
@@ -57,6 +66,13 @@ export default {
                     }
                 };
                 xhr.send(JSON.stringify(params));
+            }).catch(err => {
+                if (err.errno === 3) {
+                    sessionStorage.removeItem('userName');
+                    location.hash = '/'
+                } else {
+                    return err;
+                }
             });
         } else {
             return this.jsonp(params);

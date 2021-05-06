@@ -4,6 +4,7 @@ import './home.less';
 import cache from '../util/cache';
 import toast from '../toast/toast';
 import Ajax from '../util/request';
+import Profile from '../profile/profile.jsx';
 
 const Home = props => {
     const [isLogin, setIsLoginState] = useState(true);
@@ -96,7 +97,7 @@ const Home = props => {
     return <div className="home-wrapper">
         <div className="home-head">
             <div className="name-area" onClick={loginOrRegister}>
-                {nickName || '注册/登陆'}
+                {nickName ? <Profile name={nickName} /> : '注册/登陆'}
             </div>
         </div>
         {hasPopup && <Popup maskClose={false} onClose={onPopupClose}>

@@ -6,7 +6,6 @@ const Profile = props => {
     const [photo, setPhoto] = useState('');
 
     useEffect(() => {
-        console.log(name);
         name && setPhoto(name.split('')[0]);
     }, [name]);
     return <div className="user-profile">
