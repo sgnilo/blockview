@@ -1,9 +1,51 @@
+.home-wrapper {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .home-search-box {
+        box-sizing: content-box;
+        padding: 5px;
+        border-radius: 50px;
+        box-shadow: 5px 5px 10px 0 #d1d9e6, -5px -5px 10px 0 #fff;
+    }
+    .search-input-box {
+        margin: 0!important;
+        position: relative;
+        .search-input {
+            min-width: 50vw;
+        }
+        .search-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 30px;
+            width: 80px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 10px 0 #d1d9e6, -5px -5px 10px 0 #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            cursor: pointer;
+            svg {
+                height: 20px;
+                width: 20px;
+            }
+        }
+    }
+    
+}
 .home-head {
-    height: 40px;
+    height: 60px;
     width: 100vw;
     padding: 0 20px;
     box-sizing: border-box;
     text-align: right;
+    position: fixed;
+    top: 0;
+    left: 0;
     .name-area {
         display: inline-block;
         vertical-align: middle;
@@ -11,7 +53,7 @@
         max-width: 200px;
         text-overflow: ellipsis;
         white-space: nowrap;
-        line-height: 40px;
+        line-height: 60px;
         font-size: 16px;
         color: #222;
         cursor: pointer;
@@ -19,13 +61,23 @@
             text-decoration: underline;
         }
     }
+    .login {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        margin: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 6px 6px 10px 0 #d1d9e6, -6px -6px 10px 0 #fff;
+    }
 }
 
 .user-box {
     width: 350px;
     .box-title {
         font-size: 28px;
-        font-weight: bold;
+        font-weight: 500;
         margin: 15px 0;
     }
     .text-input {

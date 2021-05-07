@@ -40,7 +40,8 @@ export default {
                 xhr.send();
             }).catch(err => {
                 if (err.errno === 3) {
-                    sessionStorage.removeItem('userName');
+                    sessionStorage.removeItem('user');
+                    console.log(sessionStorage.getItem('user'));
                     location.hash = '/'
                 } else {
                     return err;
@@ -68,7 +69,8 @@ export default {
                 xhr.send(JSON.stringify(params));
             }).catch(err => {
                 if (err.errno === 3) {
-                    sessionStorage.removeItem('userName');
+                    sessionStorage.removeItem('user');
+                    console.log(sessionStorage.getItem('user'));
                     location.hash = '/'
                 } else {
                     return err;
@@ -77,6 +79,31 @@ export default {
         } else {
             return this.jsonp(params);
         }
+    },
+    upload(params) {
+        const xhr = createXHR();
+        return new Promise((resolve, reject) => {
+            const {url, data, uploadListener} = params;
+            xhr.open('POST', url);
+            xhr.withCredentials = true;
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    preProcessRes(xhr.response, resolve, reject);
+                } else if (xhr.readyState === 4) {
+                    reject(xhr.response);
+                }
+            };
+            uploadListener && uploadListener(xhr.upload);
+            xhr.send(data);
+        }).catch(err => {
+            if (err.errno === 3) {
+                sessionStorage.removeItem('user');
+                console.log(sessionStorage.getItem('user'));
+                location.hash = '/'
+            } else {
+                return err;
+            }
+        });
     },
     jsonp(params) {
         const cbName = `cb_${new Date().getTime()}`;
